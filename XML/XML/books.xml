@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<books>
+	<book bookno="001">
+		<title>Java编程语言</title>
+		<author>atuer</author>
+		<price>80</price>
+	</book>
+	<book bookno="002">
+		<title>算法</title>
+		<author>高纳德</author>
+		<price>100</price>
+	</book>
+</books>
