@@ -39,6 +39,7 @@ alias java8="export JAVA_HOME=$JAVA_8_HOME"
 alias java11="export JAVA_HOME=$JAVA_11_HOME"
 # default java8
 export JAVA_HOME=$JAVA_8_HOME
+export PATH=$PATH:$JAVA_HOME/bin
 ```
 
 然后执行命令：`source  ~/.bash_profile` 使配置立即生效，如果未生效，关掉当前Terminal并重新打开。
