@@ -78,6 +78,8 @@ LinkedBlockingQueue 的三个构造方法，都初始化了队列的头部和尾
 
 有一点始终成立的是：`head.item == null`，因为 head 始终指向一个无用的空节点。
 
+从 LinkedBlockingQueue 的构造方法中可以看出，LinkedBlockingQueue 是有界的，当未指定容量时则默认为 Integer.MAX_VALUE 为队列容量。
+
 ## 5. Fields
 
 ```java

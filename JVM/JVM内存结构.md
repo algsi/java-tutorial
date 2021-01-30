@@ -34,7 +34,7 @@ JVM内存结构主要有三大块：**堆内存**、**方法区**和**栈**。�
 
 <img src="images/jvm05.png" />
 
-方法区和对是所有线程共享的内存区域；而java栈、本地方法栈和程序员计数器是运行是线程私有的内存区域。
+方法区和对是所有线程共享的内存区域；而 Java 栈、本地方法栈和程序员计数器是运行是线程私有的内存区域。
 
 下面我们详细介绍每个区域的作用
 
@@ -143,19 +143,19 @@ public class HelloWorld {
 Exception in thread “main”: java.lang.OutOfMemoryError: Java heap space
 ```
 
-原因：对象不能被分配到堆内存中
+原因：对象不能被分配到堆内存中。
 
 ```java
 Exception in thread “main”: java.lang.OutOfMemoryError: PermGen space
 ```
 
-原因：类或者方法不能被加载到持久代。它可能出现在一个程序加载很多类的时候，比如引用了很多第三方的库；
+原因：类或者方法不能被加载到持久代。它可能出现在一个程序加载很多类的时候，比如引用了很多第三方的库。
 
 ```java
 Exception in thread “main”: java.lang.OutOfMemoryError: Requested array size exceeds VM limit
 ```
 
-原因：创建的数组大于堆内存的空间
+原因：创建的数组长度大于JVM的限制。
 
 ```java
 Exception in thread “main”: java.lang.OutOfMemoryError: request <size> bytes for <reason>. Out of swap space?
@@ -167,4 +167,5 @@ Exception in thread “main”: java.lang.OutOfMemoryError: request <size> bytes
 Exception in thread “main”: java.lang.OutOfMemoryError: <reason> <stack trace>（Native method）
 ```
 
-原因：同样是本地方法内存分配失败，只不过是JNI或者本地方法或者Java虚拟机发现
+原因：同样是本地方法内存分配失败，只不过是JNI或者本地方法或者Java虚拟机发现。
+

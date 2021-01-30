@@ -104,8 +104,6 @@ LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得
 
 上面的继承体系乍一看还是挺复杂的，同时还有点让人迷惑。HashMap.TreeNode 不继承 HashMap.Node 却继承了 HashMap.Node 的子类 LinkedHashMap.Entry。如果你熟知了 HashMap 而没有看 LinkedHashMap，那么你一定不熟悉为什么 HashMap.TreeNode 为什么要继承 LinkedHashMap.Entry。到了这里，我们现在应该要明白为什么要这样继承，HashMap.TreeNode 继承了 LinkedHashMap.Entry 就获得了 before 和 after 两个属性，也就是说获得了构成双向链表的能力。HashMap.TreeNode 也需要构成双向链表吗？当然需要，因为 LinkedHashMap 基于 HashMap，它里面的链表结构也可能会转换为红黑树，因此，为了利用双向链表有序，红黑树的节点也需要加入到双向链表中。
 
-
-
 我们先来看 LinkedHashMap.Entry 的类结构：
 
 ```java
@@ -347,7 +345,7 @@ private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
 
 <img src="images/linkedhashmap_put.jpg" alt="linkedhashmap_put" style="zoom:80%;" />
 
-我把 newNode 方法用红色背景标出来了，这一步狠关键。LinkedHashMap 覆盖了从 HashMap 继承而来的该方法。在重写的这个方法中，LinkedHashMap 创建了 Entry，并在 newNode 方法中调用 linkNodeLast 方法将 Entry 接在双向链表的尾部，实现了双向链表的建立和维护。双向链表建立之后，我们就可以顺着双向链表去遍历 LinkedHashMap。
+我把 newNode 方法用红色背景标出来了，这一步很关键。LinkedHashMap 覆盖了从 HashMap 继承而来的该方法。在重写的这个方法中，LinkedHashMap 创建了 Entry，并在 newNode 方法中调用 linkNodeLast 方法将 Entry 接在双向链表的尾部，实现了双向链表的建立和维护。双向链表建立之后，我们就可以顺着双向链表去遍历 LinkedHashMap。
 
 以上就是 LinkedHashMap 维护插入顺序的相关分析。但在本节最后，还想提一提里面的几个重要方法。如果仔细看的话，会发现有三个以 after 开头的方法，它们在 JDK 1.8 中的 HashMap都是空方法，如下：
 

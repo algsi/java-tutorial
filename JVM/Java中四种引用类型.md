@@ -8,7 +8,7 @@
 
 在JDK 1.2以前的版本中，若一个对象不被任何变量引用，那么程序就无法再使用这个对象。也就是说，只有对象处于可触及（reachable）状态，程序才能使用它。从JDK 1.2版本开始，把对象的引用分为4种级别，从而使程序能更加灵活地控制对象的生命周期。这4种级别由高到低依次为：强引用、软引用、弱引用和虚引用。
 
-虽然垃圾回收的具体运行是由JVM来控制的，但是开发人员仍然可以在一定程度上与垃圾回收器进行交互，起目的在于更好的帮助垃圾回收管理好应用的内存，这种交互方式就是使用JDK 1.2 引入的 java.lang.ref 包。
+虽然垃圾回收的具体运行是由JVM来控制的，但是开发人员仍然可以在一定程度上与垃圾回收器进行交互，其目的在于更好的帮助垃圾回收器管理好应用的内存，这种交互方式就是使用JDK 1.2 引入的 java.lang.ref 包。
 
 这四种引用类型都定义在 java.lang.ref 包下，在这个包下的类有：
 
@@ -36,7 +36,7 @@ FinalReference 类是包内可见，其他三种引用类型均为 public，可�
 Date date = new Date()
 ```
 
-其中的 date 救生衣一个实例的强引用。对象的强引用可以在程序中到处传递。很多情况下，会同时有多个引用指向同一个对象。强引用的存在限制了对象在内存中的存活时间。假如对象A中包含了一个对象B的强引用，那么一般情况下，对象B的存活时间就不会短于对象A。如果对象A没有显式的把对象B的引用设为null的话，就只有当对象A被垃圾回收之后，对象B才不再有引用指向它，才可能获得被垃圾回收的机会。
+其中的 date 就是一个实例的强引用。对象的强引用可以在程序中到处传递。很多情况下，会同时有多个引用指向同一个对象。强引用的存在限制了对象在内存中的存活时间。假如对象A中包含了一个对象B的强引用，那么一般情况下，对象B的存活时间就不会短于对象A。如果对象A没有显式的把对象B的引用设为null的话，就只有当对象A被垃圾回收之后，对象B才不再有引用指向它，才可能获得被垃圾回收的机会。
 
 从上面的描述中，我们可以推出：强引用可能导致内存泄漏。
 
@@ -117,7 +117,7 @@ public class SoftReferenceTest {
             当软引用被回收了，softQueue.remove()中就加入了一个引用而脱离阻塞状态，obj此时不会为null。
              */
             if(obj != null) {
-                System.out.println("Object for SoftReference is "+obj.get());
+                System.out.println("Object for SoftReference is " + obj.get());
             }
         }
     }
@@ -178,7 +178,7 @@ After new byte[]:Soft Get = null
 
 加入 `-XX:+PrintGCDetails` 参数运行可以更形象的看到GC回收的细节。
 
-** 下面对上面的例子进行解释 **：我们首先构造一个 MyObject 对象，并将其赋值给 object 变量，这样就构成了强引用。然后使用 SoftReference 构造这个MyObject对象的软引用 softRef，并注册到softQueue引用队列。当softRef被回收时，MyObject 对象会被加入softQueue队列。设置obj=null，删除这个强引用，因此，系统内对MyObject对象的引用只剩下软引用。此时，显示调用GC，通过软引用的get()方法，取得MyObject对象的引用，发现对象并未被回收（因为输出了 “This is MyObject”），这说明GC在内存充足的情况下，不会回收软引用对象。接着，请求一块大的堆空间 `5*1024*692 Byte` ，这个操作会使系统堆内存使用紧张，从而产生新一轮的GC。在这次GC后，softRef.get() 不再返回 MyObject 对象，而是返回null，说明在系统内存紧张的情况下，软引用被回收。软引用被回收时，该软引用对象会被加入注册的引用队列。
+**下面对上面的例子进行解释**：我们首先构造一个 MyObject 对象，并将其赋值给 object 变量，这样就构成了强引用。然后使用 SoftReference 构造这个 MyObject 对象的软引用 softRef，并注册到 softQueue 引用队列。当 softRef 被回收时，MyObject 对象会被加入 softQueue 队列。设置obj=null，删除这个强引用，因此，系统内对 MyObject 对象的引用只剩下软引用。此时，显示调用GC，通过软引用的 get() 方法，取得 MyObject 对象的引用，发现对象并未被回收（因为输出了 “This is MyObject”），这说明GC在内存充足的情况下，不会回收软引用对象。接着，请求一块大的堆空间 `5*1024*692 Byte` ，这个操作会使系统堆内存使用紧张，从而产生新一轮的GC。在这次GC后，softRef.get() 不再返回 MyObject 对象，而是返回null，说明在系统内存紧张的情况下，软引用被回收。软引用被回收时，该软引用对象会被加入注册的引用队列。
 
 如果将上面案例中的数组再改大点，比如5*1024*1024，就会抛出 OutOfMemory 异常：
 
@@ -223,7 +223,7 @@ public class BitMapManager {
             return null;
         }
 
-        // 取出Bitmap对象，如果由于内存不足Bitmap被回收，将取得空
+        // 取出Bitmap对象，如果由于内存不足Bitmap被回收，将取得null
         Bitmap bitmap = softBitmap.get();
         return bitmap;
     }
@@ -232,7 +232,7 @@ public class BitMapManager {
 
 ## 三、弱引用（Weak Reference）
 
-弱引用（Weak Reference）在强度上要弱于软引用，通过 WeakReference 来表示。它的作用是引用一个对象，但是并不阻止该对象被回收。如果使用一个强引用的话，只要该引用存在，那么被引用的对象是不能被回收的。弱引用则没有这个问题。在垃圾回收器运行的时候，如果一个对象的 **所有引用都是弱引用 **的话，该对象就会被回收。弱引用的作用在于解决强引用所带来的对象之间在存活时间上的耦合关系。
+弱引用（Weak Reference）在强度上要弱于软引用，通过 WeakReference 来表示。它的作用是引用一个对象，但是并不阻止该对象被回收。如果使用一个强引用的话，只要该引用存在，那么被引用的对象是不能被回收的。弱引用则没有这个问题。在垃圾回收器运行的时候，如果一个对象的 **所有引用都是弱引用** 的话，该对象就会被回收。弱引用的作用在于解决强引用所带来的对象之间在存活时间上的耦合关系。
 
 弱引用最常见的用处是在集合类中，尤其是哈希表中。哈希表的接口允许使用任何Java对象来作为键或值来使用，每当一个键值被放入哈希表中，那么哈希表对象本身就有了对这些键和值对象的引用。如果这种引用是强引用的话，那么只要哈希表对象本身还存活，其中所包含的键和值对象是不会被回收的。如果某个存活时间很长的哈希表中包含的键值对很多，最终就有可能消耗掉JVM中全部的内存。
 
@@ -289,7 +289,7 @@ public class WeakReferenceTest {
             }
 
             if (obj != null) {
-                System.out.println("删除的弱引用为："+obj+"，获取弱引用的对象obj.get() = "+obj.get());
+                System.out.println("删除的弱引用为："+obj+"，获取弱引用的对象obj.get() = " + obj.get());
             }
         }
     }
@@ -322,11 +322,11 @@ MyObject' s finalize() called
 删除的弱引用为：java.lang.ref.WeakReference@1540e19d，获取弱引用的对象obj.get() = null
 ```
 
-可以看到，在GC之前，弱引用对象并未被垃圾回收器发现，因此通过 weakReference.get()可以获取对应的对象引用。但是只要进行垃圾回收，**弱引用一旦被发现，便会立即被回收**，并加入注册引用队列中（weakQueue.remove() 也不会处于阻塞状态而被触发）。此时再试图通过weakRef.get()获取对象的引用就会失败。
+可以看到，在GC之前，弱引用对象并未被垃圾回收器发现，因此通过 weakReference.get()可以获取对应的对象引用。但是只要进行垃圾回收，**弱引用一旦被发现，便会立即被回收**，并加入注册引用队列中（weakQueue.remove() 也不会处于阻塞状态而被触发）。此时再试图通过 weakRef.get() 获取对象的引用就会失败。
 
-_ 软引用、弱引用都非常适合来保存那些可有可无的缓存数据。如果这么做，当系统内存不足时，这些缓存数据会被回收，不会导致内存溢出。而当内存资源充足时，这些缓存数据又可以存在相当长的时间，从而起来加速系统的作用。
+软引用、弱引用都非常适合来保存那些可有可无的缓存数据。如果这么做，当系统内存不足时，这些缓存数据会被回收，不会导致内存溢出。而当内存资源充足时，这些缓存数据又可以存在相当长的时间，从而起来加速系统的作用。
 
-##  四、虚引用（Phantom Reference）
+## 四、虚引用（Phantom Reference）
 
 虚引用也称为幽灵引用或者幻影引用，它是最弱的一种引用关系。一个持有虚引用的对象，和没有引用几乎是一样的，随时都有可能被垃圾回收器回收。当试图通过虚引用的 get() 方法取得强引用时，总是会失败。
 
@@ -419,7 +419,7 @@ public class PhantomReferenceTest {
         MyObject object = new MyObject();
         Reference<MyObject> phanRef = new PhantomReference<>(object, phantomQueue);
         System.out.println("创建的虚引用为："+phanRef);
-      
+
         // 启动线程
         new Thread(new CheckRefQueue()).start();
 

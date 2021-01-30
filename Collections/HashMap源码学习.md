@@ -53,6 +53,8 @@ static final int hash(Object key) {
 
 从上面我们还可以看出一点东西，那就是当 key 为 null 时，该方法的返回值是0。这一点其实告诉我们，如果一个 key 为 null，那么它应该被存储在数据第一个元素对应的容器中。
 
+该 hash 方法的返回值在 HashMap 中是作为 Node 的 hash 属性。
+
 ## Entry 的继承体系
 
 ### 静态内部类 Node&lt;K, V&gt;
@@ -516,7 +518,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 
 resize 方法用于初始化数组或者将数组的长度翻倍。因为 HashMap 使用的是 2 的幂次方扩展策略，即数组的长度始终是 2 的幂次方，所以来自同一个 bin（list bin 或者 tree bin）的元素都要么待在数组原索引处，要么都发生 2 的幂次方偏移。
 
-上面这一点不难理解。假设 HashMap 中数组的长度为 16，那么 length-1 的二进制就是 1111，现在有一个 hash 二进制为 1001的 key，它们做与运算得到的十进制为 9，也就是说所有 hash 二进制为 1001 的 key 都将被放到 index 为 9 的 bin 中。如果 HashMap 的数组长度翻倍扩展到 32，则 length-1 的二进制就是 11111，这时  hash 二进制为 1001的 key 经过哈希函数重新得到的 index 还是 9，就是所有 hash 二进制为 1001 的 key 还处在和之前相同的 index。另一种情况，如果是 hash 二进制为 11001 的 key，当数组长度从 16 翻倍到 32 时，这些 key 经过哈希函数得到的 index 都是 25，偏移量为 16，为 2 的幂次方。通过例子自己计算一遍二进制位运算比较容易理解。
+上面这一点不难理解。假设 HashMap 中数组的长度为 16，那么 length-1 的二进制就是 1111，现在有一个 hash 二进制值为 1001 的 Node，它们做与运算得到的十进制为 9，也就是说所有 hash 二进制为 1001 的 Node 都将被放到 index 为 9 的 bin 中。如果 HashMap 的数组长度翻倍扩展到 32，则 length-1 的二进制就是 11111，这时  hash 二进制为 1001 的 Node 经过哈希函数重新得到的 index 还是 9，就是所有 hash 二进制为 1001 的 key 还处在和之前相同的 index。另一种情况，如果是 hash 二进制为 11001 的 Node，当数组长度从 16 翻倍到 32 时，这些 key 经过哈希函数得到的 index 都是 25，偏移量为 16，为 2 的幂次方。通过例子自己计算一遍二进制位运算比较容易理解。
 
 上述说的这种特性看似好像没什么用，但是在 ConcurrentHashMap 中却发挥了很大的作用。
 

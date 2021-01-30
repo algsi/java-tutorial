@@ -10,6 +10,10 @@ BoundedBuffer 是 java.util.concurrent.locks.Condition 类注释中提供的一�
 
 BoundedBuffer 就是一个简易版本的 ArrayBlockingQueue，我们可以通过 BoundedBuffer 来快速了解 ArrayBlockingQueue 的实现机制。
 
+BoundedBuffer 的注释：
+
+> If a {@code take} attempted on a empty buffer, then the thread will block unitl an item becomes available; if a {@code put} is attempted on a full buffer, then the thread will block unitl a space becomes available. We would like to keep waiting {@code put} threads and {@code take} threads in separate wait-sets so that we can use the optimization of only notifing a single thread at a time when items or spaces become available in the buffer. This can be achieved using two {@code Condition} instances.
+
 ### BoundedBuffer
 
 BoundedBuffer 代码如下所示：
@@ -22,7 +26,7 @@ public class BoundedBuffer {
     final Condition notEmpty = lock.newCondition();  // 读线程条件
 
     final Object[] items = new Object[100];
-    int putper, takeptr, count;
+    int putptr, takeptr, count;
 
     /**
      * Producer
@@ -31,11 +35,11 @@ public class BoundedBuffer {
         lock.lock();
         try {
             while (count == items.length) {
-                notFull.wait();
+                notFull.await();
             }
-            items[putper] = x;
-            if (++putper == items.length) {
-                putper = 0;
+            items[putptr] = x;
+            if (++putptr == items.length) {
+                putptr = 0;
             }
             ++count;
             notEmpty.signal();
@@ -75,9 +79,9 @@ BoundedBuffer 提供了 take 和 put 两个核心方法。如果一个线程尝�
 
 从上面的代码中，从一个 ReentrantLock 创建出两个 Condition 对象，这两个 Condition 对象共用一个同步队列（sync queue），但是拥有各自单独的条件等待队列（condition queue）。使用两个 Condition 对象，可以分别将写线程和读线程放入不同的 condition 队列。
 
-多个 condition 的强大之处。假设缓存已满，调用 `notFull.wait()`，阻塞的肯定是写线程，等待 notFull 条件，调用 `notEmpty.signal()` 唤醒的是读线程；相反地，假设缓存已空，调用 `notEmpty.await()` 阻塞的肯定是读线程，等待 notEmpty 条件，调用 `notFull.signal()` 唤醒的肯定是写线程。
+多个 condition 的强大之处。假设缓存已满，调用 `notFull.wait()`，阻塞的肯定是写线程，等待 notFull 条件，调用 `notFull.signal()` 唤醒的肯定是写线程；相反地，假设缓存已空，调用 `notEmpty.await()` 阻塞的肯定是读线程，等待 notEmpty 条件，调用 `notEmpty.signal()` 唤醒的是读线程。
 
-但如果我们只有一个 condition 实例呢？假设缓存队列已满，调用 condition 的 signal 方法去唤醒线程，但是这个 Lock 不知道唤醒的是读线程还是写线程，因为读线程和写线程都阻塞在同一个 condition 队列中，如果唤醒的是读线程，那么皆大欢喜，如果唤醒的是写线程，那么线程刚被唤醒又要阻塞了，因为条件不满足（队列是满的），这时又要去重新唤醒其他线程，这样就浪费了很多时间，而即便是调用 signalAll 唤醒所有线程也不一定就是读线程会抢到锁。所以，只使用一个 condition 实例的实现方式，锁的效率是十分低下的。
+但如果我们只有一个 condition 实例呢？假设缓存队列已满，调用 condition 的 signal 方法去唤醒线程，但是这个 Lock 不知道唤醒的是读线程还是写线程，因为读线程和写线程都阻塞在同一个 condition 队列中，如果唤醒的是读线程，那么皆大欢喜，如果唤醒的是写线程，那么线程刚被唤醒又要阻塞了，因为条件不满足（队列是满的），这时又要去重新唤醒其他线程，这样就浪费了很多时间，而即便是调用 signalAll 唤醒所有线程也不一定就是读线程会抢到锁，并且唤醒的全部线程只有一个能够竞争得到锁，其他现在后面还是要等待，在高并发的情况下，这会造成很大的上下文切换。所以，只使用一个 condition 实例的实现方式，锁的效率是十分低下的。
 
 多个 condition 会有自己单独的等待队列，调用 await 方法，会将线程放到对应的等待队列中。当调用某个 condition 的 signalAll/signal 方法，则只会唤醒对应的等待队列中的线程。唤醒的粒度变小了，且更具针对性，因此效率也就更高。
 

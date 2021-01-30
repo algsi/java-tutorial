@@ -1,4 +1,4 @@
-# GC算法 垃圾收集器
+# GC算法
 
 From: <http://www.ityouknow.com/jvm/2017/08/29/GC-garbage-collection.html>
 
@@ -6,7 +6,7 @@ From: <http://www.ityouknow.com/jvm/2017/08/29/GC-garbage-collection.html>
 
 ## 一、概述
 
-垃圾收集 Garbage Collection 通常被称为“GC”，它诞生于1960年 MIT 的 Lisp 语言，经过半个多世纪，目前已经十分成熟了。 jvm 中，程序计数器、虚拟机栈、本地方法栈都是随线程而生随线程而灭，栈帧随着方法的进入和退出做入栈和出栈操作，实现了自动的内存清理，因此，我们的内存垃圾回收主要集中于 Java堆（Heap）和方法区（Method Area）中，其中主要集中在 Heap 中，在程序运行期间，这部分内存的分配和使用都是动态的.
+垃圾收集 Garbage Collection 通常被称为“GC”，它诞生于1960年 MIT 的 Lisp 语言，经过半个多世纪，目前已经十分成熟了。 jvm 中，程序计数器、虚拟机栈、本地方法栈都是随线程而生随线程而灭，栈帧随着方法的进入和退出做入栈和出栈操作，实现了自动的内存清理，因此，我们的内存垃圾回收主要集中于 Java堆（Heap）和方法区（Method Area）中，其中主要集中在 Heap 中，在程序运行期间，这部分内存的分配和使用都是动态的。
 
 ## 二、对象存活判断
 
@@ -34,7 +34,7 @@ From: <http://www.ityouknow.com/jvm/2017/08/29/GC-garbage-collection.html>
 
 - 第二次标记：第一次标记后接着会进行一次筛选，筛选的条件是此对象是否有必要执行finalize()方法。在finalize()方法中没有重新与引用链建立关联关系的，将被进行第二次标记。
 
-  第二次标记成功的对象将真的会被回收，如果对象在finalize()方法中重新与引用链建立了关联关系，那么将会逃离本次回收。
+第二次标记成功的对象将真的会被回收，如果对象在finalize()方法中重新与引用链建立了关联关系，那么将会逃离本次回收。
 
 ### 方法区如何判断是否需要回收
 
@@ -46,7 +46,7 @@ From: <http://www.ityouknow.com/jvm/2017/08/29/GC-garbage-collection.html>
 
 - 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。
 
-关于类加载的原理，也是阿里面试的主角，面试官也问过我比如：能否自己定义java.lang.String，答案是不行，因为JVM在加载类的时候会对包名进行安全性检查，详情可见 `java.lang.ClassLoader#preDefineClass()` 方法。
+关于类加载的原理，也是阿里面试的主角，面试官也问过我比如：能否自己定义 java.lang.String，答案是不行，因为JVM在加载类的时候会对包名进行安全性检查，详情可见 `java.lang.ClassLoader#preDefineClass()` 方法。
 
 ## 三、垃圾收集算法
 
@@ -164,4 +164,20 @@ G1的新生代收集跟ParNew类似，当新生代占用达到一定比例的时
 	<img src="images/gc_G1_03.png" />
 
 6. 复制/清除过程后。回收区域的活性对象已经被集中回收到深蓝色和深绿色区域。
+
+## 5、如何查看你的垃圾收集器
+
+如何查看你的 JDK 版本所使用的垃圾收集器信息呢？
+
+输入命令 `java -XX:+PrintCommandLineFlags -version` 即可，如下：
+
+```bash
+(base) ➜  ~ java -XX:+PrintCommandLineFlags -version
+-XX:InitialHeapSize=536870912 -XX:MaxHeapSize=8589934592 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseParallelGC 
+java version "1.8.0_241"
+Java(TM) SE Runtime Environment (build 1.8.0_241-b07)
+Java HotSpot(TM) 64-Bit Server VM (build 25.241-b07, mixed mode)
+```
+
+可以看到 `-XX:+UseParallelGC ` 参数，使用的是 Parallel 收集器。
 

@@ -170,5 +170,5 @@ public class Driver extends NonRegisteringDriver implements java.sql.Driver {
 }
 ```
 
-我们看到Driver注册到DriverManager中的操作写在了静态代码块中，这就是为什么在写JDBC时使用Class.forName()的原因了。
+我们看到Driver注册到DriverManager中的操作写在了静态代码块中，静态代码块是在类加载的初始化阶段执行的，这就是为什么在写JDBC时使用Class.forName()的原因了。
 

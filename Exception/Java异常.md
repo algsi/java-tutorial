@@ -14,7 +14,7 @@
 
 在Java语言中，异常是以类的形式进行封装的。程序可以处理对应的类是 `java.lang.Exception` 及其子类，错误异常对应的类是 `java.lang.Error` 及其子类，运行时异常对应的类是 `java.lang.RunntimeException` 及其子类，其中，类 `java.lang.RunntimeException` 是类 `java.lang.Exception` 的子类。在类 `java.lang.Exception` 的子类中，除了类 `java.lang.Exception` 及其子类之外，都是受检异常对应的类。上面所说的类都是 `java.lang.Throwable` 的子类。它们之间的层次关系图如下：
 
-<img src="../images/exception/relationship.png" />
+<img src="images/relationship.png"/>
 
 ## 一、异常对象的生成
 

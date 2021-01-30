@@ -1,6 +1,6 @@
-# java.util.Properties
+# Properties
 
-Properties是存储键值对的工具类，可以使用它来对存储键值对的文件进行操作。
+java.util.Properties 是存储键值对的工具类，可以使用它来对存储键值对的文件进行操作。
 
 存储键值对的文件很简单，后缀为 .properties，例如下面是一个 info.properties 文件：
 

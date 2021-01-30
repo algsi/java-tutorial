@@ -1,0 +1,3 @@
+# PriorityQueue详解
+
+Java中的PriorityQueue是基于数组实现的二叉树小顶堆。

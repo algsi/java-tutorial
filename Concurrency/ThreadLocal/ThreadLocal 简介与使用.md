@@ -4,7 +4,7 @@ JDK版本：1.8
 
 ## 一、问题引出
 
-D仔 遇到了一个棘手的问题，他在一个 AccountService 中写了一段类似这样的代码：
+大胖 遇到了一个棘手的问题，他在一个 AccountService 中写了一段类似这样的代码：
 
 ```java
 Context ctx = new Context();
@@ -13,13 +13,13 @@ ctx.setTrackerID(......);
 
 然后这个 AccountService 调用了其他Java类，不知道经过了多少层调用以后，最终来到了一个叫做 AccountUtil 的地方，在这个类中需要使用Context中的trackerID来做点儿事情。
 
-很明显，这个AccountUtil没有办法拿到Context对象，怎么办？D仔想到，要不把Context对象一层层地传递下去，这样AccountUtil不就可以得到了吗？
+很明显，这个AccountUtil没有办法拿到Context对象，怎么办？大胖想到，要不把Context对象一层层地传递下去，这样AccountUtil不就可以得到了吗？
 
 可是这么做改动量太大！涉及到的每一层函数调用都得改动，有很多类都不属于自己的小组管理，还得和别人协调。
 
 更要命的是有些类根本就没有源码，想改都改不了。
 
-这也难不住我，D仔想：可以把那个 set/get TrackerID 的方法改成静态(static)的，这样不管跨多少层调用都没有问题！
+这也难不住我，大胖想：可以把那个 set/get TrackerID 的方法改成静态(static)的，这样不管跨多少层调用都没有问题！
 
 ```java
 public class Context{
@@ -34,7 +34,7 @@ public class Context{
 
 这样就不用一层层地传递了，Perfect！
 
-D仔得意洋洋地把代码提交给Bill做Review。
+大胖得意洋洋地把代码提交给Bill做Review。
 
 Bill看了一眼就指出了致命的问题： 多线程并发的时候出错！
 
@@ -59,7 +59,7 @@ ThreadLocal<String> threadLocalA= new ThreadLocal<String>();
 
 像 "1234"，"5678" 这些值都会放到自己所属的线程对象中。如下图：
 
-<img src="../../images/thread/threadlocal/map_one.PNG" />
+<img src="images/map_one.PNG" />
 
 每个线程中都维护着一个 ThreadLocalMap 对象，相当于把各自的数据放入到了各自 Thread 这个对象中去了，每个线程的值自然就区分开了，可是那个数据结构 map 呢？想想，假设你创建了另外一个threadLocalB：
 
@@ -72,7 +72,7 @@ ThreadLocal<Integer> threadLocalB = new ThreadLocal<Integer>();
 
 那线程对象的 map 就起到作用了：
 
-<img src="../../images/thread/threadlocal/map_two.PNG" />
+<img src="images/map_two.PNG" />
 
 明白了，这个私家领地还真是好用，我现在就把我那个Context给改了，让它使用ThreadLocal：
 
@@ -152,15 +152,15 @@ public class ContextTest implements Runnable{
 
 我们看看线程1中的状态
 
-<img src="../../images/thread/threadlocal/thread1.PNG" />
+<img src="images/thread1.PNG" />
 
 我们看看线程2中的状态
 
-<img src="../../images/thread/threadlocal/thread2.PNG" />
+<img src="images/thread2.PNG" />
 
 **如果展开每个线程中的 threadLocals 中的 referent，它们都是同一个 ThreadLocal 对象（因为我声明为 static 修饰），对于同一个 ThreadLocal 对象的 threadLocalHashCode 的也是一样的。因此，对于一个 ThreadLocal 对象，其实例只有一个，但是在 Thread 的 ThreadLocalMap 对象中，存储着 ThreadLocal 对象的 threadLocalHashCode 和与当前线程关联的变量。**
 
-<img src="../../images/thread/threadlocal/storage_principle.PNG" />
+<img src="images/storage_principle.PNG" />
 
 ## 总结
 

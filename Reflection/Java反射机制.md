@@ -16,13 +16,13 @@ Java反射机制是在<font color="red">运行状态</font>中，对于任意一
 
 	```java
 		Student stu=new Student();
-    ```
+  ```
 
 - 动态编译：运行时确定类型，绑定对象。动态编译最大限度发挥Java的灵活性，体现了多态的应用，用以降低类之间的耦合性。
 
 	```java
 		Class.forName("com.mysql.jdbc.Driver.class").newInstance();
-    ```
+  ```
 一句话，反射机制的优点就是可以实现动态创建对象和编译，体现出很大的灵活性，特别是在J2EE的开发中。
 
 它的缺点是对性能的影响。使用反射基本上是一种解释操作，这类操作总是慢于直接执行的相同操作。
@@ -56,7 +56,7 @@ Class类没有公共的构造方法。Class对象是在加载类时，由Java虚
 	```java
 	String str="abc";
     Class c1=str.getClass();
-    ```
+  ```
 
 - class.getSuperclass：获取当前Class的父类的Class
 
@@ -64,13 +64,13 @@ Class类没有公共的构造方法。Class对象是在加载类时，由Java虚
 	List list=new ArrayList();
     Class listClass=list.getClass();
     Class superClass=listClass.getSupserclass();
-    ```
+  ```
 
 - .class语法：.class直接获取
 
 	```java
     Class listClass=ArrayList.class;
-    ```
+  ```
 
 - Class.forName(类名)：用Class的静态方法，传入类名即可
 
@@ -78,7 +78,7 @@ Class类没有公共的构造方法。Class对象是在加载类时，由Java虚
 	List list=new ArrayList();
     Class listClass=list.getClass();
     Class superClass=listClass.getSupserclass();
-    ```
+  ```
 
 - Primitive TYPE：基本数据类型的包装类获取Class方式
 

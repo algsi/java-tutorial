@@ -48,7 +48,7 @@ private static int nextHashCode() {
 }
 ```
 
-第一个成员变量给出下一个 ThreadLocal 的 hashcode，第二个变量是 hashcode 的增量，第三个变量通过调用第一个成员变量，并传入增量，返回下一个 ThreadLocal 的 hashcode。
+第一个成员变量给出下一个 ThreadLocal 的 hashcode，它是一个原子变量，因此 ThreadLocal 不会存在 hash 冲突，第二个变量是 hashcode 的增量，第三个变量通过调用第一个成员变量，并传入增量，返回下一个 ThreadLocal 的 hashcode。
 
 ## 二、ThreadLocalMap
 
@@ -108,7 +108,7 @@ ThreadLocalMap(ThreadLocal<?> firstKey, Object firstValue) {
 
 我们可以通过下面一张图来看看 ThreadLocal 的工作原理：
 
-<img src="../../images/thread/threadlocal/storage_principle.PNG" />
+<img src="images/storage_principle.PNG" />
 
 ## Methods
 
@@ -137,6 +137,8 @@ public void set(T value) {
 这个方法为该 ThreadLocal 设置当前线程下的指定的变量，需要先获取当前的线程，并通过当前线程获取当前线程维护的 ThreadLocalMap 对象，实际上，Thread 类中维护着一个变量，如下：
 
 ```java
+/* ThreadLocal values pertaining to this thread. This map is maintained
+ * by the ThreadLocal class. */
 ThreadLocal.ThreadLocalMap threadLocals = null;
 ```
 
