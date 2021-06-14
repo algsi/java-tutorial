@@ -1,4 +1,4 @@
-# <font color="red">java.util.regex包下Pattern、Matcher类学习</font>
+# java.util.regex包下Pattern、Matcher类学习
 
 java.util.regex包主要包括以下三个类：
 
@@ -10,7 +10,7 @@ java.util.regex包主要包括以下三个类：
 
 	PatternSyntaxException 是一个非强制异常类，它表示一个正则表达式模式中的语法错误。
 
-## <font color="red">Pattern类</font>
+## Pattern类
 
 Pattern 对象是一个正则表达式的编译表示。Pattern 类没有公共构造方法。要创建一个 Pattern 对象，你必须首先调用其公共静态编译方法，它返回一个 Pattern 对象。该方法接受一个正则表达式作为它的第一个参数。
 
@@ -22,7 +22,7 @@ Pattern 实现类ljava.io中的Serializable序列化接口。
 
 	这是Pattern类的静态编译方法，该方法就相当于一个构造方法，因为它返回一个类的示例。它的String类型参数是一个正则表达式。
 
-    ```
+    ```java
     /**
      * Compiles the given regular expression into a pattern.
      *
@@ -40,21 +40,21 @@ Pattern 实现类ljava.io中的Serializable序列化接口。
     	return new Pattern(regex, flags);
     }
     ```
-    
+  
     其中参数flags是表明匹配模式，下面是取值说明，这些都是 Pattern 类的静态常量（final类型）
-    
-    ```
+  
+    ```java
      * @param  flags
      *         Match flags, a bit mask that may include
      *         {@link #CASE_INSENSITIVE}, {@link #MULTILINE}, {@link #DOTALL},
      *         {@link #UNICODE_CASE}, {@link #CANON_EQ}, {@link #UNIX_LINES},
      *         {@link #LITERAL}, {@link #UNICODE_CHARACTER_CLASS}
      *         and {@link #COMMENTS}
-	```
+	  ```
 
 - toString()方法：返回模板的字符串形式
 
-	```
+	```java
     /**
      * <p>Returns the string representation of this pattern. This
      * is the regular expression from which this pattern was
@@ -66,11 +66,11 @@ Pattern 实现类ljava.io中的Serializable序列化接口。
     public String toString() {
         return pattern;
     }
-    ```
+  ```
 
 - matcher()：用于获得Matcher对象的一个方法，该方法接收一个被判定的序列作为参数。其中compiled是一个boolean类型成员变量，初始值为false，以记录该pattern是否被编译。
 
-	```
+	```java
     /**
      * Creates a matcher that will match the given input against this pattern.
      *
@@ -93,13 +93,13 @@ Pattern 实现类ljava.io中的Serializable序列化接口。
 
 - matches()：匹配搜索，返回boolean值，实际上 String 类中的 matches 方法正是调用的此方法。
 
-	```
+	```java
     public static boolean matches(String regex, CharSequence input) {
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(input);
         return m.matches();
     }
-    ```
+  ```
 
 ## <font color="red">Matcher类</font>
 
@@ -112,12 +112,11 @@ Matcher matcher = pattern.matcher("string");
 
 此时我们就得到了一个Matcher对象，通过此对象就可以对字符串进行操作了。
 
-
 #### <font color="orange">构造方法</font>
 
 友好的而并非public，所以，并没有公共默认的构造方法，需要 Pattern 的 matcher() 方法。在第二个方法中我们可以看到匹配完成之后，此对象又将返回初始化状态。
 
-```
+```java
 /**
  * No default constructor.
  */
@@ -141,12 +140,12 @@ Matcher(Pattern parent, CharSequence text) {
 }
 
 ```
-    
+
 #### <font color="orange">reset ( )</font>
 
 重新设置方法。这个方法被重载，可以用一个新的序列来重设这个对象，但最后还是调用了无参的方法。
 
-```
+```java
 /**
  * Resets this matcher.
  *
@@ -191,8 +190,6 @@ public Matcher reset(CharSequence input) {
 }
 ```
 
-
-
 #### <font color="orange">主要的匹配查找方法</font>
 
 Matcher有以下可以用来匹配查找的方法：
@@ -213,7 +210,7 @@ matches()的前提是Pattern匹配整个字符串，而lookingAt()的意思是Pa
 
 以下是源码以及注释
 
-```
+```java
     /**
      * Attempts to find the next subsequence of the input sequence that matches
      * the pattern.
@@ -277,7 +274,7 @@ matches()的前提是Pattern匹配整个字符串，而lookingAt()的意思是Pa
 
 使用例子
 
-```
+```java
 package com.general;
 
 import java.util.regex.Matcher;
@@ -311,7 +308,8 @@ public class Test {
 ```
 
 输出结果为：
-```
+
+```language
 Match number: 1
 start(): 0. end(): 3
 123
@@ -347,7 +345,7 @@ public int end(int group)返回上次匹配所找到的group的结束位置，�
 
 示例：
 
-```
+```java
 package com.general;
 
 import java.util.regex.Matcher;
@@ -476,7 +474,7 @@ group 4 [shun/nThe]
 
 如果匹配成功，start( )会返回此次匹配的开始位置，end( )会返回此次匹配的结束位置，即最后一个字符的下标加一。如果之前的匹配不成功(或者没匹配)，那么无论是调用start( )还是end( )，都会引发一个IllegalStateException。下面这段程序还演示了matches( )和lookingAt( )：
 
-```
+```java
 package com.general;
 
 import java.util.regex.Matcher;
@@ -523,7 +521,7 @@ public class Test {
 
 输出结果为：
 
-```
+```language
 input[0]: Java has regular expressions in 1.4
 m1.find() 'regular' start = 9 end = 16
 m1.find() 'ressions' start = 20 end = 28
@@ -557,7 +555,7 @@ m2.matches() start = 0 end = 35
 
 示例：
 
-```
+```java
 package com.general;
 
 import java.util.Arrays;
@@ -580,7 +578,7 @@ public class Test {
 
 运行结果
 
-```
+```language
 [This, unusual use, of exclamation, points]
 [This, unusual use, of exclamation!!points]
 [Aha!, String, has, a, split(), built, in!]
@@ -590,7 +588,7 @@ public class Test {
 
 compile( )方法还有另一种重载，它可以传入一个控制正则表达式的匹配行为的参数.
 
-```
+```java
 	/* @param  flags
      *         Match flags, a bit mask that may include
      *         {@link #CASE_INSENSITIVE}, {@link #MULTILINE}, {@link #DOTALL},
@@ -622,7 +620,7 @@ public static Pattern compile(String regex, int flags) {
 
 示例：
 
-```
+```java
 package com.li.regex.matcher;
 
 import java.util.regex.Matcher;
@@ -646,7 +644,7 @@ public class PatternFlags {
 
 运行结果：
 
-```
+```language
 java
 Java
 JAVA
@@ -666,7 +664,7 @@ Matcher类同时提供了四个将匹配子串替换成指定字符串的方法�
 
 程序示例：
 
-```
+```java
 package com.li.regex.matcher;
 
 import java.util.regex.Matcher;
